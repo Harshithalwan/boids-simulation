@@ -1,6 +1,6 @@
 let x = 100, y = 100;
 let speedX = 0, speedY = 0;
-numBoids = 500;
+numBoids = 100;
 const boids = [];
 const visualRange = 100;
 
