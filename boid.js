@@ -1,11 +1,12 @@
 let x = 100, y = 100;
 let speedX = 0, speedY = 0;
-numBoids = 100;
+numBoids = 50;
 const boids = [];
 const visualRange = 100;
 
 
 const canvas = document.getElementById("boids");
+canvas.requestFullscreen("auto");
 const parent = document.getElementById("canvasParent");
 const width = parent.offsetWidth;
 const height = parent.offsetHeight
@@ -13,18 +14,50 @@ canvas.width = width;
 canvas.height = height;
 const ctx = canvas.getContext("2d");
 
+// listen for mouse click and add a boid at the click location
+canvas.addEventListener("click", (event) => {
+    const rect = canvas.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+    boids.push({ x, y, speedX: Math.random() * 2 - 1, speedY: Math.random() * 2 - 1 });
+});
+
+// listen for touch and add a boid at the touch location
+canvas.addEventListener("touchstart", (event) => {
+    const rect = canvas.getBoundingClientRect();
+    const x = event.touches[0].clientX - rect.left;
+    const y = event.touches[0].clientY - rect.top;
+    boids.push({ x, y, speedX: Math.random() * 2 - 1, speedY: Math.random() * 2 - 1 });
+});
+
+// add buttons to turn off gravity, repel and align
+const gravityButton = document.getElementById("gravityButton");
+const repelButton = document.getElementById("repelButton");
+const alignButton = document.getElementById("alignButton");
+let gravityOn = true;
+let repelOn = true;
+let alignOn = true;
+gravityButton.addEventListener("click", () => {
+    gravityOn = !gravityOn;
+    gravityButton.textContent = `Gravity: ${gravityOn ? "On" : "Off"}`;
+});
+repelButton.addEventListener("click", () => {
+    repelOn = !repelOn;
+    repelButton.textContent = `Repel: ${repelOn ? "On" : "Off"}`;
+});
+alignButton.addEventListener("click", () => {
+    alignOn = !alignOn;
+    alignButton.textContent = `Align: ${alignOn ? "On" : "Off"}`;
+});
+
+
+
 const draw = (boid) => {
     const angle = Math.atan2(boid.speedY, boid.speedX)
     ctx.translate(boid.x, boid.y);
     ctx.rotate(angle);
     ctx.translate(-boid.x, -boid.y);
-    // const hexChars = '0123456789ABCDEF';
-    // let color = '#';
-    // for (let i = 0; i < 6; i++) {
-    //     color += hexChars[Math.floor(Math.random() * hexChars.length)];
-    // }
     ctx.beginPath();
-    // ctx.fillStyle = color
     ctx.moveTo(boid.x, boid.y);
     ctx.lineTo(boid.x - 15, boid.y + 5);
     ctx.lineTo(boid.x - 15, boid.y - 5);
@@ -81,10 +114,12 @@ const gravity = (boid) => {
     if (neighbourCount > 0) {
         centerX = centerX / neighbourCount;
         centerY = centerY / neighbourCount;
+
+        boid.speedX += (centerX - boid.x) * gravityConstant;
+        boid.speedY += (centerY - boid.y) * gravityConstant;
     }
 
-    boid.speedX += (centerX - boid.x) * gravityConstant;
-    boid.speedY += (centerY - boid.y) * gravityConstant;
+
 }
 
 const repel = (boid) => {
@@ -123,7 +158,7 @@ const align = (boid) => {
 }
 
 const speedLimiter = (boid) => {
-    const maxSpeed = 10;
+    const maxSpeed = 6;
     const speed = Math.sqrt(Math.pow(boid.speedX, 2) + Math.pow(boid.speedY, 2))
     if (speed > maxSpeed) {
         boid.speedX = (boid.speedX / speed) * maxSpeed
@@ -137,10 +172,16 @@ animate = async () => {
     for (let boid of boids) {
         draw(boid);
         bounceFromBorder(boid);
-        gravity(boid);
+        if (gravityOn) {
+            gravity(boid);
+        }
         speedLimiter(boid);
-        repel(boid);
-        align(boid);
+        if (repelOn) {
+            repel(boid);
+        }
+        if (alignOn) {
+            align(boid);
+        }
         moveBoid(boid);
     }
 }

@@ -1,28 +1,35 @@
 <html>
-  <head> </head>
-  <body
-    style="
+
+<head> </head>
+
+<body style="
       padding: 0;
       margin: 0;
       box-sizing: content-box;
       display: flex;
       justify-content: center;
       align-items: center;
-    "
-  >
-    <div
-      id="canvasParent"
-      style="
+    ">
+  <div id="canvasParent" style="
         width: 100vw;
         height: 100vh;
         display: flex;
         justify-content: center;
         align-items: center;
-      "
-    >
-      <canvas
-        id="boids"
-        style="
+      ">
+    <div style="
+          position: absolute;
+          top: 10px;
+          left: 10px;
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+        ">
+      <button id="gravityButton">Toggle Gravity</button>
+      <button id="repelButton">Toggle Repulsion</button>
+      <button id="alignButton">Toggle Alignment</button>
+    </div>
+    <canvas id="boids" style="
           padding: 0;
 
           margin: 0;
@@ -34,9 +41,8 @@
             rgba(255, 255, 255, 1) 54%,
             rgba(0, 212, 255, 1) 100%
           );
-        "
-      ></canvas>
-    </div>
-  </body>
-  <script src="./boid.js"></script>
+        "></canvas>
+    <script src="./boid.js"></script>
+</body>
+
 </html>
